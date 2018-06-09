@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--Add a click drag and move event -->
+<head>
+	<title>Box Click Box Move</title>
+	<style type="text/css">
+		#source
+		{
+			width: 400px; height: 100px;
+			background-color: gray;
+			position: absolute;
+			top: 400px;
+			left: 700px;
+		}
+		#count
+		{
+			width: 50px;
+			background-color: white;
+			position: absolute;
+			top: 350px;
+			left: 900px;			
+		}
+
+	</style>
+	<script type="text/javascript" src="js/eventCrossBrows.js"></script>
+	<script>
+	var count = 0;
+
+	
+	function getTextAreaContent(){
+		/**
+		* Characters are values from 0 to 255 which includes letters, spaces and even control
+		* characters. Since it has ASCII balue, it is a character.
+		*REF: https://stackoverflow.com/questions/4841053/is-space-considered-a-character
+		*/
+		content = document.getElementById("source").value;
+		return content;
+	}
+	function countWords(ev){
+		/**
+		* This function actually does all.
+		*- It detect if Enter key has been press and return
+		*- It invoke a funcion which gains all the characters in the textarea
+		*- It remove carrage returns
+		*- It counts the remaining characters and add in the input field.
+
+		*NB// The event that triggers is fast so this function will by default read
+		* the textarea before the character is been dispayed in the textarea field. Hence
+		*this will lead to a wrong counting of characters. So we introduce a delay so that
+		*the the textarea field is been read after the character has been displayed.
+		*/
+		var e = ev;
+		setTimeout(function () { 
+		   
+			/**
+			* Check for specific keypress(SPACE, DELETE)
+			* Get textarea content and count it
+			* update input count.
+			*/
+
+			e = Myevent.objEvent(e);
+			if (e.keyCode == 13) {
+				return;
+				}    // Enter keypress here won't be considered
+
+			console.log(e.keyCode);
+			words = getTextAreaContent(); // Get all characters in the textarea field.
+			words = words.replace(/[\r\n]+/g, ''); // Remove all carriage returns
+			count = words.length;                  // Get number of characters and update count
+
+			input = document.getElementById('count');
+			input.value = count+"/250";              // Insert in input field
+
+		}, 200);// I use 200milliseconds, but can still be reduced to find the threshold.
+	}
+
+	Myevent.listenEvent(window, 'load', function(){
+		//Myevent.listenEvent(document.getElementById('source'), 'keypress', countWords);
+		Myevent.listenEvent(document.getElementById('source'), 'keydown',countWords);
+
+	});
+
+	</script>
+</head>
+<body>
+<form>
+	<textarea id="source"></textarea>
+	<input id="count" value="0/250" disabled="disabled"></input>
+</form>
+</body>
